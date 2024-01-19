@@ -40,7 +40,10 @@ class VoucherManagementListView(VoucherManagementView):
 
     def get(self, request, *args, **kwargs):
         vouchers = Voucher.objects.all()
+        user = request.user
+        voucher_management_access = user.is_staff or user.is_superuser
         context = {
+            'voucher_management_access': voucher_management_access,
             'form': self.create_voucher_form,
             'vouchers': vouchers,
         }
@@ -74,7 +77,10 @@ class VoucherManagementDetailView(VoucherManagementView):
     def get(self, request, *args, **kwargs):
         voucher_id = kwargs.get('pk', None)
         voucher = self.voucher_management_service.get_voucher(voucher_id)
+        user = request.user
+        voucher_management_access = user.is_staff or user.is_superuser
         context = {
+            'voucher_management_access': voucher_management_access,
             'form': self.update_voucher_form,
             'voucher_detail_view': True,
             'voucher_detail_view_url': f'/portal/voucher-management/vouchers/{voucher_id}/',

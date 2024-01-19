@@ -47,7 +47,9 @@ class VoucherRedemptionView(DashboardView):
         """
         user = request.user
         redeemed_vouchers = self.voucher_redemption_service.get_redeemed_vouchers(user)
+        voucher_management_access = user.is_staff or user.is_superuser
         context = {
+            'voucher_management_access': voucher_management_access,
             'form': self.form,
             'redeemed_vouchers': redeemed_vouchers,
         }

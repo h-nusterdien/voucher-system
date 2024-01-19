@@ -10,16 +10,23 @@
         {% include "dashboard/components/header.html" %}
         <div class="container pt-5 pb-5">
             <div class="mt-5">
-                {% if voucher_detail_view %}
-                    <a href="/portal/voucher-management/vouchers/">
-                        <button class="btn btn-dark" type="submit">Back to List View</button>
-                    </a>
-                    <hr class="mt-5"/>
-                {% elif 'Voucher Management' in application_name%}
-                    <a href="/portal/voucher-redemption/redeem/">
-                        <button class="btn btn-dark" type="submit">Go to Voucher Redemption System</button>
-                    </a>
-                    <hr class="mt-5"/>
+                {% if voucher_management_access %}
+                    {% if voucher_detail_view %}
+                        <a href="/portal/voucher-management/vouchers/">
+                            <button class="btn btn-dark" type="submit">Back to List View</button>
+                        </a>
+                        <hr class="mt-5"/>
+                    {% elif 'Voucher Management' in application_name%}
+                        <a href="/portal/voucher-redemption/redeem/">
+                            <button class="btn btn-dark" type="submit">Go to Voucher Redemption System</button>
+                        </a>
+                        <hr class="mt-5"/>
+                    {% elif 'Voucher Redemption' in application_name %}
+                        <a href="/portal/voucher-management/">
+                            <button class="btn btn-dark" type="submit">Go to Voucher Management System</button>
+                        </a>
+                        <hr class="mt-5"/>
+                    {% endif %}
                 {% endif %}
             </div>
             <div class="mt-5">
