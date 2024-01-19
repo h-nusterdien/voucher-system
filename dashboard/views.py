@@ -1,13 +1,32 @@
-from django.shortcuts import render, redirect
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
 from django.conf import settings
+from typing import Dict, Any
 
 
 class DashboardView(LoginRequiredMixin, View):
-    login_url = settings.LOGIN_URL
+    """
+    Base class for dashboard views.
 
-    dashboard_context = {
+    Attributes:
+    - `login_url`: str - The URL to redirect to for login.
+    - `dashboard_context`: Dict[str, Any] - The context for the dashboard view.
+
+    Example:
+    ```
+    class MyDashboardView(DashboardView):
+        template_name = 'my_dashboard.html'
+        dashboard_context = {
+            'header': {
+                'title': 'My Dashboard',
+            }
+        }
+    ```
+    """
+
+    login_url: str = settings.LOGIN_URL  # type: str
+
+    dashboard_context: Dict[str, Any] = {
         'header': {
             'urls': {
                 'sign_up': settings.SIGN_UP_URL,
@@ -15,4 +34,4 @@ class DashboardView(LoginRequiredMixin, View):
                 'logout': settings.LOGOUT_URL,
             }
         },
-    }
+    }  # type: Dict[str, Any]
