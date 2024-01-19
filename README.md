@@ -15,6 +15,30 @@ The Voucher System is a Django-based application designed to create and manage v
 - **Redemption Options:** Support single redemption, multiple redemption, and redemption up to a certain number of times.
 - **Time Constraints:** Ability to redeem vouchers only before a specified point in time.
 
+## Code Structure
+
+The project follows a modular structure with the following Django apps:
+
+1. **api:** Handles API endpoints and communication with client applications using Django Rest Framework.
+
+2. **dashboard:**
+   - **voucher_management:** Restricted to staff and superusers for configuring and managing vouchers.
+   - **voucher_redemption:** Accessible to any user for redeeming vouchers.
+
+3. **user_auth:** Handles user authentication and authorization, ensuring only authorized users access the voucher management interface.
+
+4. **voucher_management:** Backend logic for voucher creation, configuration, and management.
+
+5. **voucher_redemption:** Backend logic for voucher redemption.
+
+## Design Choices
+
+- **Framework:** Built using Django and Django Rest Framework for a robust and scalable web application.
+- **Authentication:** Utilizes Django's built-in authentication system for secure user authentication.
+- **Modularity:** Organized code into separate apps for clearer separation of concerns and maintainability.
+- **Database:** Uses Django's ORM for database interactions, allowing easy database migrations and management.
+- **RESTful API:** Implements a RESTful API using Django Rest Framework for communication with client applications.
+
 ## Installation
 
 1. Clone the repository:
