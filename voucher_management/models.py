@@ -1,5 +1,5 @@
 from django.db import models
-from typing import Tuple, Optional
+from typing import Tuple, Optional, List
 
 
 class Voucher(models.Model):
