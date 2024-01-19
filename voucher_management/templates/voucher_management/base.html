@@ -1,0 +1,64 @@
+{% extends 'dashboard/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block page_content %}
+    <h3>
+        {% if voucher_detail_view %}Voucher:{% else %}Vouchers:{% endif %}
+    </h3>
+    <table class="table table-bordered table-striped table-hover align-middle mt-3">
+        <thead>
+            <tr>
+                {% for field_name in voucher_field_names %}
+                    <th>{{field_name}}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for voucher in vouchers %}
+                <tr>
+                    <td>{{voucher.code}}</td>
+                    <td>{{voucher.description}}</td>
+                    <td>{{voucher.discount_percentage}}</td>
+                    <td>
+                        {% if "single" in voucher.redemption_type %}
+                            Single Redemption
+                        {% elif "multiple" in voucher.redemption_type %}
+                            Multiple Redemption
+                        {% elif "x_times" in voucher.redemption_type %}
+                            X Times Redemption
+                        {% endif %}
+                    </td>
+                    <td>{% if voucher.redemption_limit %}{{voucher.redemption_limit}}{% else %}∞{% endif %}</td>
+                    <td>{{voucher.redemption_count}}</td>
+                    <td>{% if voucher.expiration_date %}{{voucher.expiration_date}}{% else %}∞{% endif %}</td>
+                    <td>{% if voucher.is_active %}Active{% else %}Inactive{% endif %}</td>
+                    <td>
+                        {% if voucher_detail_view %}
+                            <form action="" method="POST">
+                                {% csrf_token %}
+                                <input type="hidden" name="formMethod" value="DELETE">
+                                <button class="btn btn-danger" type="submit">Delete</button>
+                            </form>
+                        {% else %}
+                            <form action="{{voucher.id}}" method="GET">
+                                <button class="btn btn-primary" type="submit" formmethod="GET">Manage</button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <hr class="mt-5" />
+    <h3 class="mt-5">
+        {% if voucher_detail_view %}Update{% else %}Create{% endif %} Voucher:
+    </h3>
+    <form class="mt-3 w-50" action="" method="POST">
+        {% csrf_token %}
+        {{form|crispy}}
+        <input type="hidden" name="formMethod" value="PUT">
+        <button class="btn btn-success" type="submit">
+            {% if voucher_detail_view %}Update{% else %}Create{% endif %}
+        </button>
+    </form>
+{% endblock page_content %}

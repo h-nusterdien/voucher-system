@@ -1,0 +1,32 @@
+{% extends 'user_auth/base.html' %}
+{% load crispy_forms_tags %}
+
+{% block page_content %}
+    {% if error %}
+        <div class="d-flex justify-content-center">
+            <div class="alert alert-danger alert-dismissible fade show m-2" role="alert">
+                {{error}}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+    {% endif %}
+    <div class="d-flex justify-content-center align-self-center p-5">
+        <div class="bg-white border border-secondary rounded text-center p-4">
+            <div>
+                <h1>Login</h1>
+            </div>
+            <div class="py-4 px-5">
+                <form style="width:300px;" method="POST">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <button class="btn btn-success" type="submit">Login</button>
+                </form>
+            </div>
+            <div>
+                <p class="">
+                    Don't have an account? Signup <a href="{{urls.signup}}">here</a>
+                </p>
+            </div>
+        </div>
+    <div>
+{% endblock page_content %}
