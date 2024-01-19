@@ -5,9 +5,25 @@ import requests
 
 
 class VoucherManagementService:
+    """
+    Service class for managing voucher-related operations.
+
+    Attributes:
+    - `voucher_redemption_service`: An instance of VoucherRedemptionService for handling voucher redemption operations.
+    """
+
     voucher_redemption_service = VoucherRedemptionService()
-    
+
     def get_voucher(self, id):
+        """
+        Retrieve a voucher by its ID.
+
+        Parameters:
+        - `id` (int): The ID of the voucher to retrieve.
+
+        Returns:
+        - A Voucher instance if found, else None.
+        """
         voucher = None
         if id:
             try:
@@ -15,8 +31,17 @@ class VoucherManagementService:
             except Voucher.DoesNotExist:
                 return voucher
         return voucher
-    
+
     def get_voucher_by_code(self, voucher_code):
+        """
+        Retrieve a voucher by its unique code (case-insensitive).
+
+        Parameters:
+        - `voucher_code` (str): The unique code of the voucher.
+
+        Returns:
+        - A Voucher instance if found, else None.
+        """
         voucher = None
         if voucher_code:
             try:
@@ -26,6 +51,16 @@ class VoucherManagementService:
         return voucher
 
     def update_voucher(self, voucher, form):
+        """
+        Update the fields of a voucher based on the data provided in the form.
+
+        Parameters:
+        - `voucher` (Voucher): The voucher instance to be updated.
+        - `form` (UpdateVoucherForm): The form containing updated voucher data.
+
+        Returns:
+        - True if the update is successful, else False.
+        """
         changed_data_fields = form.changed_data
         form_cleaned_data = form.cleaned_data
         fields_to_be_updated = {}
@@ -46,6 +81,15 @@ class VoucherManagementService:
         return True
 
     def create_voucher(self, form):
+        """
+        Create a new voucher based on the data provided in the form.
+
+        Parameters:
+        - `form` (CreateVoucherForm): The form containing voucher creation data.
+
+        Returns:
+        - True if the creation is successful, else False.
+        """
         form_data = form.cleaned_data
         redemption_type = form_data.get('redemption_type')
         redemption_limit = self.voucher_redemption_service.get_redemption_limit(form)
@@ -63,6 +107,15 @@ class VoucherManagementService:
         return True
 
     def delete_voucher(self, voucher):
+        """
+        Delete a voucher by sending a DELETE request to the voucher API.
+
+        Parameters:
+        - `voucher` (Voucher): The voucher instance to be deleted.
+
+        Returns:
+        - HttpResponse containing success or failure message.
+        """
         try:
             api_url = f'http://127.0.0.1:8000/api/vouchers/{voucher.id}/'
             response = requests.delete(api_url)

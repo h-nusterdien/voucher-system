@@ -8,9 +8,10 @@ class LoginForm(forms.Form):
     Form for user login.
 
     Fields:
-    - username: CharField for username input.
-    - password: CharField for password input (masked).
+    - `username` (CharField): Field for entering the username.
+    - `password` (CharField): Field for entering the password (masked).
     """
+
     username = forms.CharField(label="Username")
     password = forms.CharField(label="Password", widget=forms.PasswordInput)
 
@@ -20,11 +21,12 @@ class SignUpForm(UserCreationForm):
     Form for user sign-up.
 
     Fields:
-    - username: CharField for username input.
-    - email: EmailField for user email input.
-    - password1: CharField for password input (masked).
-    - password2: CharField to confirm the password (masked).
+    - `username` (CharField): Field for entering the username.
+    - `email` (EmailField): Field for entering the email.
+    - `password1` (CharField): Field for entering the password (masked).
+    - `password2` (CharField): Field for confirming the password (masked).
     """
+
     email = forms.EmailField(label="Email")
     
     class Meta:

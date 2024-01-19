@@ -5,6 +5,18 @@ from .models import Voucher
 
 
 class UpdateVoucherForm(forms.Form):
+    """
+    Form for updating voucher details.
+
+    Fields:
+    - `code` (CharField): Voucher code (optional).
+    - `description` (CharField): Voucher description (optional).
+    - `discount_percentage` (IntegerField): Discount percentage (optional).
+    - `redemption_type` (ChoiceField): Redemption type (optional).
+    - `x_times_redemption_limit` (IntegerField): X times redemption limit (optional).
+    - `expiration_date` (DateTimeField): Expiration date (optional, with date picker widget).
+    - `is_active` (BooleanField): Active status (optional, default: True).
+    """
     code = fields.CharField(
         required=False,
     )
@@ -36,6 +48,17 @@ class UpdateVoucherForm(forms.Form):
 
 
 class CreateVoucherForm(forms.Form):
+    """
+    Form for creating a new voucher.
+
+    Fields:
+    - `code` (CharField): Voucher code.
+    - `description` (CharField): Voucher description (optional).
+    - `discount_percentage` (IntegerField): Discount percentage.
+    - `redemption_type` (ChoiceField): Redemption type.
+    - `x_times_redemption_limit` (IntegerField): X times redemption limit (optional).
+    - `expiration_date` (DateTimeField): Expiration date (optional, with date picker widget).
+    """
     code = fields.CharField()
     description = fields.CharField(
         required=False,

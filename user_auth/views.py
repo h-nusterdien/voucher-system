@@ -6,6 +6,13 @@ from .forms import LoginForm, SignUpForm
 
 
 class UserAuth(View):
+    """
+    Base view for user authentication-related functionality.
+
+    Attributes:
+    - `base_context` (dict): Base context with URLs for signup, login, and logout.
+    """
+
     base_context = {
         'urls': {
             'signup': settings.SIGN_UP_URL,
@@ -16,10 +23,24 @@ class UserAuth(View):
 
 
 class LoginView(UserAuth):
+    """
+    View for handling user login.
+
+    Attributes:
+    - `template` (str): Template for rendering the login page.
+    - `form` (LoginForm): Form for user login.
+    """
+
     template = 'user_auth/login.html'
     form = LoginForm()
 
     def get(self, request):
+        """
+        Handle GET request for rendering the login page.
+
+        Returns:
+        - Rendered HTML page for user login.
+        """
         context = {
             'form': self.form,
         }
@@ -27,6 +48,15 @@ class LoginView(UserAuth):
         return render(request, self.template, context)
     
     def post(self, request):
+        """
+        Handle POST request for user login.
+
+        Parameters:
+        - `request` (HttpRequest): HTTP request object.
+
+        Returns:
+        - Redirects to the appropriate page after login.
+        """
         username = request.POST["username"]
         password = request.POST["password"]
         user = authenticate(request, username=username, password=password)
@@ -48,17 +78,50 @@ class LoginView(UserAuth):
 
 
 class LogoutView(UserAuth):
+    """
+    View for handling user logout.
+
+    Attributes:
+    - `template` (str): Template for rendering the logout page.
+    - `form` (None): No form needed for logout.
+    """
+
+    template = None
+
     def get(self, request):
+        """
+        Handle GET request for user logout.
+
+        Parameters:
+        - `request` (HttpRequest): HTTP request object.
+
+        Returns:
+        - Redirects to the login page after logout.
+        """
         if request.user.is_authenticated:
             logout(request)
         return redirect(settings.LOGIN_URL)
 
 
 class SignupView(UserAuth):
+    """
+    View for handling user signup.
+
+    Attributes:
+    - `template` (str): Template for rendering the signup page.
+    - `form` (SignUpForm): Form for user signup.
+    """
+
     template = 'user_auth/signup.html'
     form = SignUpForm()
 
     def get(self, request):
+        """
+        Handle GET request for rendering the signup page.
+
+        Returns:
+        - Rendered HTML page for user signup.
+        """
         context = {
             'form': self.form,
         }
@@ -66,6 +129,15 @@ class SignupView(UserAuth):
         return render(request, self.template, context)
     
     def post(self, request):
+        """
+        Handle POST request for user signup.
+
+        Parameters:
+        - `request` (HttpRequest): HTTP request object.
+
+        Returns:
+        - Redirects to the login page after successful signup.
+        """
         form = SignUpForm(request.POST)
         if form.is_valid():
             form.save()

@@ -7,17 +7,19 @@ from .services import VoucherManagementService
 
 
 class VoucherManagementView(DashboardView):
+    """
+    Base view for voucher management, providing common functionalities and templates.
+
+    Attributes:
+    - `template`: The template file to be used for rendering.
+    - `voucher_field_names`: List of field names for displaying voucher details.
+    - `voucher_management_service`: An instance of the VoucherManagementService for managing vouchers.
+    - `base_context`: Base context containing application name and voucher field names.
+    """
+
     template = 'voucher_management/base.html'
     voucher_field_names = [
-        'Code', 
-        'Description', 
-        'Discount %', 
-        'Redemption Type', 
-        'Redemption Limit', 
-        'Redemption Count', 
-        'Expiry Date', 
-        'Status', 
-        'Action'
+        'Code', 'Description', 'Discount %', 'Redemption Type', 'Redemption Limit', 'Redemption Count', 'Expiry Date', 'Status', 'Action'
     ]
     voucher_management_service = VoucherManagementService()
     base_context = {
@@ -25,7 +27,15 @@ class VoucherManagementView(DashboardView):
         'voucher_field_names': voucher_field_names,
     }
 
+
 class VoucherManagementListView(VoucherManagementView):
+    """
+    View for listing vouchers and handling voucher creation.
+
+    Attributes:
+    - `create_voucher_form`: Form for creating a new voucher.
+    """
+
     create_voucher_form = CreateVoucherForm()
 
     def get(self, request, *args, **kwargs):
@@ -52,6 +62,13 @@ class VoucherManagementListView(VoucherManagementView):
 
 
 class VoucherManagementDetailView(VoucherManagementView):
+    """
+    View for displaying details of a specific voucher, handling voucher updates, and deletions.
+
+    Attributes:
+    - `update_voucher_form`: Form for updating voucher details.
+    """
+
     update_voucher_form = UpdateVoucherForm()
 
     def get(self, request, *args, **kwargs):
