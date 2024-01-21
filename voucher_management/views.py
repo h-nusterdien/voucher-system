@@ -1,5 +1,4 @@
 from django.shortcuts import render, redirect
-from django.contrib import messages
 from dashboard.views import DashboardView
 from .models import Voucher
 from .forms import CreateVoucherForm, UpdateVoucherForm
@@ -52,15 +51,7 @@ class VoucherManagementListView(VoucherManagementView):
         return render(request, self.template, context)
 
     def post(self, request, *args, **kwargs):
-        form = CreateVoucherForm(request.POST)
-        if form.is_valid():
-            success = self.voucher_management_service.create_voucher(form)
-            if success:
-                success_message = f'Successfully Created Voucher'
-                messages.success(request, success_message)
-            else:
-                error_message = f'Failed to Create Voucher'
-                messages.error(request, error_message)
+        self.voucher_management_service.create_voucher(request)
         return redirect('voucher_list')
 
 
@@ -93,22 +84,9 @@ class VoucherManagementDetailView(VoucherManagementView):
     
     def post(self, request, *args, **kwargs):
         voucher_id = kwargs.get('pk', None)
-        voucher = self.voucher_management_service.get_voucher(voucher_id)
         form_method = request.POST.get('formMethod')
-
         if form_method == 'PUT':
-            form = UpdateVoucherForm(request.POST)
-            if form.is_valid():
-                success = self.voucher_management_service.update_voucher(voucher, form)
-                if success:
-                    messages.success(request, f'Successfully Updated Voucher')
-                else:
-                    messages.error(request, f'Failed to Update Voucher')
+           self.voucher_management_service.update_voucher(request, voucher_id)
         elif form_method == 'DELETE':
-            success = self.voucher_management_service.delete_voucher(voucher)
-            if success:
-                messages.success(request, f'Successfully Deleted Voucher')
-            else:
-                messages.error(request, f'Failed to Delete Voucher')
-
-        return redirect('voucher_list')
+            self.voucher_management_service.delete_voucher(request, voucher_id)
+        return redirect('voucher_detail', voucher_id)

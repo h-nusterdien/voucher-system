@@ -1,8 +1,7 @@
-from django.http import HttpResponse
 from django.contrib import messages
 from .models import Voucher
+from .forms import CreateVoucherForm, UpdateVoucherForm
 from voucher_redemption.services import VoucherRedemptionService
-import requests
 
 
 class VoucherManagementService:
@@ -50,75 +49,98 @@ class VoucherManagementService:
             except Voucher.DoesNotExist:
                 return voucher
         return voucher
-
-    def update_voucher(self, voucher, form):
+    
+    def update_voucher(self, request, voucher_id):
         """
-        Update the fields of a voucher based on the data provided in the form.
+        Updates a voucher based on the provided voucher ID and form data.
 
-        Parameters:
-        - `voucher` (Voucher): The voucher instance to be updated.
-        - `form` (UpdateVoucherForm): The form containing updated voucher data.
+        Args:
+        - `request` (HttpRequest): The HTTP request object.
+        - `voucher_id` (int): The ID of the voucher to be updated.
 
-        Returns:
-        - True if the update is successful, else False.
+        Side Effects:
+        - If the form is valid and the voucher is successfully updated, a success message is added to the Django messages framework.
+        - If an exception occurs during the update process, an error message is added to the Django messages framework.
+        - If the form is not valid, an info message is added to the Django messages framework.
+
+        Note:
+        - The update involves extracting and applying the changed fields from the form to the existing voucher.
         """
-        changed_data_fields = form.changed_data
-        form_cleaned_data = form.cleaned_data
-        fields_to_be_updated = {}
-        try:
+        form = UpdateVoucherForm(request.POST)
+        if form.is_valid():
+            form_cleaned_data = form.cleaned_data
+            changed_data_fields = form.changed_data
+            fields_to_be_updated = {}
             for changed_data_field in changed_data_fields: 
                 fields_to_be_updated[changed_data_field] = form_cleaned_data.get(changed_data_field)
-            voucher.code = fields_to_be_updated.get('code', voucher.code)
-            voucher.description = fields_to_be_updated.get('description', voucher.description)
-            voucher.discount_percentage = fields_to_be_updated.get('discount_percentage', voucher.discount_percentage)
-            voucher.expiration_date = fields_to_be_updated.get('expiration_date', voucher.expiration_date)
-            voucher.redemption_type = fields_to_be_updated.get('redemption_type', voucher.redemption_type)
-            voucher.redemption_limit = self.voucher_redemption_service.get_redemption_limit(form)
-            voucher.redemption_count = fields_to_be_updated.get('redemption_count', voucher.redemption_count)
-            voucher.is_active = fields_to_be_updated.get('is_active', voucher.is_active)
-        except:
-            return False
-        voucher.save()
-        return True
+            try:
+                voucher = self.get_voucher(voucher_id)
+                voucher.code = fields_to_be_updated.get('code', voucher.code)
+                voucher.description = fields_to_be_updated.get('description', voucher.description)
+                voucher.discount_percentage = fields_to_be_updated.get('discount_percentage', voucher.discount_percentage)
+                voucher.expiration_date = fields_to_be_updated.get('expiration_date', voucher.expiration_date)
+                voucher.redemption_type = fields_to_be_updated.get('redemption_type', voucher.redemption_type)
+                voucher.redemption_limit = self.voucher_redemption_service.get_redemption_limit(form)
+                voucher.redemption_count = fields_to_be_updated.get('redemption_count', voucher.redemption_count)
+                voucher.is_active = fields_to_be_updated.get('is_active', voucher.is_active)
+                messages.success(request, f'Successfully Updated Voucher')
+                voucher.save()
+            except Exception as e:
+                messages.error(request, f'Failed to Update Voucher')
+        else:
+            messages.info(request, f'Please retry submitting the form')
 
-    def create_voucher(self, form):
+            
+    def create_voucher(self, request):
         """
-        Create a new voucher based on the data provided in the form.
+        Creates a new voucher based on the provided form data.
 
-        Parameters:
-        - `form` (CreateVoucherForm): The form containing voucher creation data.
+        Args:
+        - `request` (HttpRequest): The HTTP request object.
 
-        Returns:
-        - True if the creation is successful, else False.
+        Side Effects:
+        - If the form is valid and the voucher is successfully created, a success message is added to the Django messages framework.
+        - If an exception occurs during the creation process, an error message is added to the Django messages framework.
+        - If the form is not valid, an info message is added to the Django messages framework.
+
+        Note:
+        - The creation involves extracting relevant data from the form and attempting to create a new Voucher object.
         """
-        form_data = form.cleaned_data
-        redemption_type = form_data.get('redemption_type')
-        redemption_limit = self.voucher_redemption_service.get_redemption_limit(form)
+        form = CreateVoucherForm(request.POST)
+        if form.is_valid():
+            form_cleaned_data = form.cleaned_data
+            redemption_type = form_cleaned_data.get('redemption_type')
+            redemption_limit = self.voucher_redemption_service.get_redemption_limit(form)
+            try:
+                Voucher.objects.create(
+                    code = form_cleaned_data.get('code'),
+                    discount_percentage = form_cleaned_data.get('discount_percentage'),
+                    description = form_cleaned_data.get('description'),
+                    redemption_type = redemption_type,
+                    redemption_limit = redemption_limit,
+                    expiration_date = form_cleaned_data.get('expiration_date'),
+                )
+                messages.success(request, f'Successfully Created Voucher')
+            except Exception as e:
+                messages.error(request, f'Failed to Create Voucher')
+        else:
+            messages.info(request, f'Please retry submitting the form')
+
+    def delete_voucher(self, request, voucher_id):
+        """
+        Deletes a voucher based on the provided voucher ID.
+
+        Args:
+        - `request` (HttpRequest): The HTTP request object.
+        - `voucher_id` (int): The ID of the voucher to be deleted.
+
+        Side Effects:
+        - If the voucher is successfully deleted, a success message is added to the Django messages framework.
+        - If an exception occurs during the deletion process, an error message is added to the Django messages framework.
+        """
         try:
-            Voucher.objects.create(
-                code = form_data.get('code'),
-                discount_percentage = form_data.get('discount_percentage'),
-                description = form_data.get('description'),
-                redemption_type = redemption_type,
-                redemption_limit = redemption_limit,
-                expiration_date = form_data.get('expiration_date'),
-            )
-        except Exception as e:
-            return False
-        return True
-
-    def delete_voucher(self, voucher):
-        """
-        Delete a voucher by sending a DELETE request to the voucher API.
-
-        Parameters:
-        - `voucher` (Voucher): The voucher instance to be deleted.
-
-        Returns:
-        - HttpResponse containing success or failure message.
-        """
-        try:
+            voucher = self.get_voucher(voucher_id)
             voucher.delete()
+            messages.success(request, f'Successfully Deleted Voucher')
         except Exception as e:
-            return False
-        return True
+            messages.error(request, f'Failed to Delete Voucher')
