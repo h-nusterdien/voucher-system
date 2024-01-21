@@ -1,4 +1,5 @@
 from django.http import HttpResponse
+from django.contrib import messages
 from .models import Voucher
 from voucher_redemption.services import VoucherRedemptionService
 import requests
@@ -117,11 +118,7 @@ class VoucherManagementService:
         - HttpResponse containing success or failure message.
         """
         try:
-            api_url = f'http://127.0.0.1:8000/api/vouchers/{voucher.id}/'
-            response = requests.delete(api_url)
-            if response.status_code == 204:
-                return HttpResponse(f'Successfully Deleted Voucher')
-            else:
-                return HttpResponse(f'Failed to Delete Voucher')
-        except requests.exceptions.RequestException as e:
-            return HttpResponse(f'API DELETE Request Error: {e}')
+            voucher.delete()
+        except Exception as e:
+            return False
+        return True
