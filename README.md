@@ -76,7 +76,7 @@ The project follows a modular structure with the following Django apps:
    
 7. Access the application in a web browser:
    
-   [http://localhost:8000/](http://localhost:8000/)
+   [http://localhost:8000](http://127.0.0.1:8000/)
 
 ## Configuration
 
